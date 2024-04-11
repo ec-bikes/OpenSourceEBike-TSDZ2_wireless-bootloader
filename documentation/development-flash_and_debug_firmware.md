@@ -6,17 +6,17 @@ This guide assumes you are using Linux Ubuntu (if you are on Windows or such, th
 
 ## Software to install
 
-- Add your user to the dialout group: __sudo usermod -a -G dialout USER_NAME__ and reboot
+- Add your user to the dialout group: `sudo usermod -a -G dialout USER_NAME` and reboot
 - install [Visual Studio Code](https://code.visualstudio.com/)
   - install C/C++ extension (to edit C/C++ source files)
   - install Cortex-Debug extension (to be able to debug ARM microcontroller)
   - install Task Manager extension (to call makefile and other commands)
-- install OpenOCD (to connect to STLinkV2): __sudo apt-get install openocd__
-- install GDB GNU debugger (for debug and connect to OpenOCD): __sudo apt-get install gdb-multiarch__
-- install ARM C/C++ GCC compiler: __sudo apt-get install gcc-arm-none-eabi__
-- install ARM binutils: __sudo apt-get install binutils-arm-none-eabi__
-- install ARM newlib: __sudo apt-get install libnewlib-arm-none-eabi__
-- install srec_cat tool: __sudo apt-get install srecord__
+- install OpenOCD (to connect to STLinkV2): `sudo apt-get install openocd`
+- install GDB GNU debugger (for debug and connect to OpenOCD): `sudo apt-get install gdb-multiarch`
+- install ARM C/C++ GCC compiler: `sudo apt-get install gcc-arm-none-eabi`
+- install ARM binutils: `sudo apt-get install binutils-arm-none-eabi`
+- install ARM newlib: `sudo apt-get install libnewlib-arm-none-eabi`
+- install srec_cat tool: `sudo apt-get install srecord`
 
 ## Open project folder with Visual Studio Code
 
@@ -32,13 +32,14 @@ Start by clicking on the clean to clean the code and then click on the build to 
 
 ![](flash_debug_2.png)
 
-The clean and build tasks call the __make clean__ and __make__ on the terminal. The tasks configurations are on the file .vscode/tasks.json.
+The clean and build tasks call the `make clean` and `make` on the terminal. The tasks configurations are on the file .vscode/tasks.json.
 
 ## Flash the firmware and debug
 
 1. Connect the STLinkV2 to the board. If you have a nRF52840 MDK Dongle see the pinout in the schematic folder. If you have the blue nRF52840 Dongle it has a different pinout, see [nRF52840 Dongle Pinout.png](./nRF52840%20Dongle%20Pinout.png), note that you do not need to connect the RST pin.
 
 Note that you will also need to install the STLinkV2 udev rules file that are on the firmware/tools/ folder, so the STLinkV2 can be accessed by the OpenOCD:
+
 ```
 sudo cp 60-st_link_v2.rules /etc/udev/rules.d
 sudo udevadm control --reload-rules
@@ -63,14 +64,17 @@ The NRF52 Flash and Debug configuration is on the file .vscode/launch.json.
 ## Troubleshooting
 
 ### Flashing appears to work fine but I cannot debug
+
 If you are flashing code via your STLinkV2 but unable to debug as when you pause the debugger it stops in unknown code you cannot step through (you see the error `ERROR: Unexpected GDB output from command "-exec-next". Cannot find bounds of current function`) then the issue is that your bootloader is doing CRC validation which fails and then refusing to load your code. You have two options to fix this:
 
 1. Change the makefile to generate the bootloader settings with correct CRC in e.g. (you will need to install nrfutil `pip install nrfutil`)
+
 ```make
 TSDZ2_with_SD:
   nrfutil settings generate --family NRF52840 --bootloader-version 0 --bl-settings-version 1 --application $(OUTPUT_DIRECTORY)/TSDZ2_wireless.hex --application-version 4294967295 $(OUTPUT_DIRECTORY)/settings.hex
   $(SREC_PATH)srec_cat $(OUTPUT_DIRECTORY)/settings.hex -Intel $(SOFT_DEVICE) -Intel $(OUTPUT_DIRECTORY)/TSDZ2_wireless.hex -Intel -Output $(OUTPUT_DIRECTORY)/TSDZ2_wireless_with_SD.hex
 ```
+
 2. Or flash a more permission bootloader which doesn't do CRC checks using the dfu/open_bootloader/pca100059_usb_debug example from the SDK.
-3. 
+
 ## [back](../README.md)

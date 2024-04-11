@@ -2,7 +2,7 @@ PROJECT_NAME     := secure_bootloader_TSDZ2
 TARGETS          := nrf52840_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ./nRF5_SDK_16.0.0
+SDK_ROOT := ./nRF5_SDK_17.1.0_ddde560
 PROJ_DIR := .
 # project build flags
 BOOTLOADER_VERSION:= 10 # integer 10's digit MAJOR VERSION , 1's digit MINOR VERSION ie: 10 = Version 1.0
@@ -251,7 +251,7 @@ CFLAGS += -DSVC_INTERFACE_CALL_AS_NORMAL_FUNCTION
 CFLAGS += -DCONFIG_NFCT_PINS_AS_GPIOS
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
-CFLAGS += -Wall 
+CFLAGS += -Wall
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
